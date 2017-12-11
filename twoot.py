@@ -1,5 +1,11 @@
+from __future__ import print_function
 import tweepy
+import unicodedata
+from pymongo import MongoClient
+import json
 
+
+MONGO_HOST='mongodb://localhost/twootdb'
 
 
 auth = tweepy.OAuthHandler(ckey, csecret)
@@ -20,7 +26,7 @@ names = [trend['name'] for trend in trends]
 topFive = names[:5]
 trendsName = ' '.join(topFive)
 #print(trendsName)
-print (topFive[0])
+print (topFive[1])
 
 
 #override tweepy.StreamListener to add logic to on_status
@@ -31,9 +37,20 @@ class MyStreamListener(tweepy.StreamListener):
         self.num_tweets = 0
     
     def on_status(self, status):
+        try:
+            client=MongoClient(MONGO_HOST)
+            db=client.twootdb
+
+            datajson=json.loads(status.text)
+            db.twitter_search.insert(datajson)
+
+        except Exception as e:
+            print(e)
         if self.num_tweets<1500:
             if not status.retweeted and not status.text.startswith("RT"):
-                print (status.text)
+                tweet=''.join(c for c in unicodedata.normalize('NFC', status.text) if c <= '\uFFFF')
+                print (tweet)
+                #print(status.text)
                 self.num_tweets+=1
                 print(self.num_tweets)
             return True
@@ -45,4 +62,4 @@ class MyStreamListener(tweepy.StreamListener):
     
 myStreamListener = MyStreamListener()
 myStream = tweepy.Stream(auth = api.auth, listener=myStreamListener)
-myStream.filter(track=topFive[0])
+myStream.filter(track=[topFive[1]],languages=["en"])
