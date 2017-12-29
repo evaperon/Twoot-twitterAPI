@@ -1,9 +1,12 @@
 import tweepy
+#import unicodedata
+from pymongo import MongoClient
+import json
 
+MONGO_HOST='mongodb://localhost/twootdb'
 
-
-auth = tweepy.OAuthHandler(ckey, csecret)
-auth.set_access_token(atoken, asecret)
+auth = tweepy.OAuthHandler(secret)
+auth.set_access_token(secret)
 
 api = tweepy.API(auth)
 
@@ -16,33 +19,56 @@ data = trends1[0]
 trends = data['trends']
 # grab the name from each trend
 names = [trend['name'] for trend in trends]
-# put all the names together with a ' ' separating them
+#grab the first five trends
 topFive = names[:5]
-trendsName = ' '.join(topFive)
+# put all the names together with a ' ' separating them
+trendsName = ' '.join(topFive) # why?
 #print(trendsName)
-print (topFive[0])
+
 
 
 #override tweepy.StreamListener to add logic to on_status
 class MyStreamListener(tweepy.StreamListener):
+    
+    def on_connect(self):
+        # Called initially to connect to the Streaming API
+        print("You are now connected to the streaming API.")
+ 
+    def on_error(self, status_code):
+        # On error - if an error occurs, display the error / status code
+        print('An Error has occured: ' + repr(status_code))
+        return False
 
-    def __init__(self, api=None):
+    def __init__(self, database, collection, api=None):
         super().__init__()
         self.num_tweets = 0
+        self.collection = collection
+        try:
+            client = MongoClient(MONGO_HOST)            
+            # Use twootdb database. If it doesn't exist, it will be created.
+            self.db = client[database]   
+        except Exception as e:
+           print(e)
     
-    def on_status(self, status):
+    def on_data(self, data):
         if self.num_tweets<1500:
-            if not status.retweeted and not status.text.startswith("RT"):
-                print (status.text)
+            # Decode the JSON from Twitter
+            datajson = json.loads(data)
+            #filerin retweets
+            if not (datajson['retweeted'] or datajson['text'].startswith('RT')):
+                #tweet=''.join(c for c in unicodedata.normalize('NFC', data.text) if c <= '\uFFFF')
+                #print (tweet)
                 self.num_tweets+=1
-                print(self.num_tweets)
+                try:
+                    self.db[self.collection].insert_one(datajson)
+                except Exception as e:
+                   print(e)
             return True
         else:
-            #stop streaming
-            print ("stop streaming")
-            return False
+             #stop streaming
+             return False
           
-    
-myStreamListener = MyStreamListener()
-myStream = tweepy.Stream(auth = api.auth, listener=myStreamListener)
-myStream.filter(track=topFive[0])
+for trend in topFive:
+    myStreamListener = MyStreamListener('twootdb',trend)
+    myStream = tweepy.Stream(auth = api.auth, listener=myStreamListener)
+    myStream.filter(track=[trend],languages=["en"])
