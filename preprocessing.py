@@ -14,7 +14,6 @@ collections = ['amtrak','Trend2','Trend3','Trend4', 'Trend5']
 
 #this function returns the 50 most used words and the whole list of unique word
 #and the times they appear in the collection and the collection's word count
-
 def countUniqueWords(tweets):
     #print(len(tweets))
     uniqueWords = {}
@@ -28,9 +27,9 @@ def countUniqueWords(tweets):
             else:
                  uniqueWords[word] = 1
 
-    #print(uniqueWords)
+    #print(uniqueWords) #dangerous
     sortedWords = sorted(uniqueWords.items(), key = lambda x : x[1])
-    #print (sortedWords)
+    #print (sortedWords) #dangerous
     sortedWords = list(reversed(sortedWords))
     top50 = sortedWords[:50]
     #print(type(top50))
@@ -73,16 +72,19 @@ for collection in collections:
 
     top50WordsWithoutStopwordRemoval, words, wordC = countUniqueWords(tweets)
     print (wordC)
-    words225 = words[:225]
-    allTheWords = [i[0] for i in words225]
-    allTheWordsC = [i[1] for i in words225]
+    words100 = words[:100]
+    allTheWords = [i[0] for i in words100]
+    allTheWordsC = [i[1] for i in words100]
     
     plt.figure(1)
+
+    #plotting the Zipf diagram
     plt.subplot(211)
     plt.bar(range(len(allTheWords)),allTheWordsC, tick_label=allTheWords, align='center', color='red')
     plt.xticks(rotation='vertical')
     plt.ylabel('Word Count')
-    
+
+    #plotting the word count of the top 50 words
     #print(top50WordsWithoutStopwordRemoval)
     wordCounts = [i[1] for i in top50WordsWithoutStopwordRemoval]
     topWords = [i[0] for i in top50WordsWithoutStopwordRemoval]
@@ -93,9 +95,17 @@ for collection in collections:
     plt.xticks(rotation='vertical')
     plt.ylabel('Word Counts')
 
+    #plotting the zipf diagram curve in loglog scale
+    plt.figure(2)
+    plt.loglog(range(len(allTheWords)),allTheWordsC)
+    plt.xticks(range(len(allTheWords)), allTheWords, rotation='vertical')
+    plt.ylabel('Word Count')
     
     #the following commented part is for lines to show for each bar
     #but it looks bad so I scrapped it
     #for i in range(len(wordCounts)):
         #plt.hlines(wordCounts[i],0,topWords[i])
+
     plt.show(block=False)
+	
+
