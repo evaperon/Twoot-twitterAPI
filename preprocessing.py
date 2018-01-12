@@ -1,10 +1,12 @@
 from pymongo import MongoClient
+import nltk
 from nltk.corpus import stopwords
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import string
 
+#nltk.download()
 MONGO_HOST='mongodb://localhost/twootdb'
 
 client = MongoClient(MONGO_HOST)
@@ -84,6 +86,7 @@ def parseTweets():
     #for every trend
     collectionsWithStopwords = []
     collectionsWithoutStopwords = []
+    IDs = []
     
     for collection in collections:
         #add the trend's name to the stopwords (me dedomeno oti to onoma tis sullogis einai to onoma tou trend)
@@ -91,15 +94,16 @@ def parseTweets():
         #load all tweets from the collection
         cursor = db[collection].find()
         tweets = []
+        tweetsIds = []
         for document in cursor:
             #we don't want retweets
             if (document['retweeted']==True):  
                 continue
             #store only the text from each tweet
             tweets.append(document['text'])
-              
-    	
-    	
+            tweetsIds.append(document['_id'])
+
+        IDs.append(tweetsIds)
         for i,tweet in enumerate(tweets):
             #if 'amtrak' not in tweet:
                 #print(tweet)
@@ -126,14 +130,18 @@ def parseTweets():
         #print(tweetsNoStopwords[0])
         collectionsWithoutStopwords.append(tweetsNoStopwords)
         
-    return collectionsWithStopwords, collectionsWithoutStopwords
+    return collectionsWithStopwords, collectionsWithoutStopwords,IDs
         
-      
-collectionsWithStopwords,collectionsWithoutStopwords = parseTweets()  
-for collection in collectionsWithStopwords:    
-    top50WordsWithoutStopwordRemoval, words, wordC = countUniqueWords(collection)
-    doThePlots(top50WordsWithoutStopwordRemoval, words, wordC)
+def main():
+    
+    collectionsWithStopwords,collectionsWithoutStopwords, dump = parseTweets()  
+    for collection in collectionsWithStopwords:    
+        top50WordsWithoutStopwordRemoval, words, wordC = countUniqueWords(collection)
+        doThePlots(top50WordsWithoutStopwordRemoval, words, wordC)
 
-for collection in collectionsWithoutStopwords:    
-    top50WordsWithStopwordRemoval, words, wordC = countUniqueWords(collection)
-    doThePlots(top50WordsWithStopwordRemoval, words, wordC)
+    for collection in collectionsWithoutStopwords:    
+        top50WordsWithStopwordRemoval, words, wordC = countUniqueWords(collection)
+        doThePlots(top50WordsWithStopwordRemoval, words, wordC)
+
+if __name__== "__main__":
+    main()
