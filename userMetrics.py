@@ -1,3 +1,7 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+
 from pymongo import MongoClient
 import numpy as np
 import matplotlib.pyplot as plt
@@ -7,28 +11,32 @@ MONGO_HOST='mongodb://localhost/twootdb'
 client = MongoClient(MONGO_HOST)
 db = client.twootdb 
 collections = ['amtrak']#,'Trend2','Trend3','Trend4', 'Trend5']
-sentimentLabels = { 'positive': 1, 'neutral': 0, 'negative': -1 }
+sentimentLabels = { 'pos': 1, 'neutral': 0, 'neg': -1 }
 
 def metrics(collection):
     cursor = db[collection].find()
-    uniqueUserSentiment = []
-    uniqueUserRatio = [] #follower:friend ratio
+    uniqueUserSentiment = {}
+    uniqueUserRatio = {} #follower:friend ratio
     for document in cursor:
-        if document['user.id'] in uniqueUserSentiment: #we don't have to check in both dicts since both kave the unique id as key
-            uniqueUserSentiment[document['user.id']] += sentimentLabels[document['label']]
+        if document['user']['id'] in uniqueUserSentiment: #we don't have to check in both dicts since both kave the unique id as key
+            print(document['label'])
+            uniqueUserSentiment[document['user']['id']] += sentimentLabels[document['label']]
         else:
-            uniqueUserSentiment[document['user.id']] = sentimentLabels[document['label']]
-            uniqueUserRatio[document['user.id']] = document['user.followers_count'] / document['user.friend_count']
-
+            uniqueUserSentiment[document['user']['id']] = sentimentLabels[document['label']]
+            if (document['user']['friends_count']>0):
+                uniqueUserRatio[document['user']['id']] = document['user']['followers_count'] / document['user']['friends_count']
+            else:
+                #WHAT?
+                x=5
     return uniqueUserSentiment, uniqueUserRatio    
 
-def userSentiment(uniqueUserSentiment):
+def userSentiment(uniqueUserSentiment,collection):
     #User Sentiment
     print("Below is the sentiment of the users around the topic : " + collection)
     for i,user in enumerate(uniqueUserSentiment):
         print([user], user[i])
 
-def userRatio(uniqueUserRatio):
+def userRatio(uniqueUserRatio,collection):
     #User follower to friend ratio
     print("Below is the follower to friend ratio of the users that posted about the topic : " + collection)
     for i,user in enumerate(uniqueUserRatio):
@@ -64,11 +72,12 @@ def main():
         
         uniqueUserSentiment, uniqueUserRatio = metrics(collection)
 
-        userSentiment(uniqueUserSentiment)
+        '''userSentiment(uniqueUserSentiment,collection)
 
-        userRatio(uniqueUserRatio)
+        userRatio(uniqueUserRatio,collection)'''
+        
 
-        plotCFD(uniqueUserRatio)
+        #plotCFD(uniqueUserRatio)
 
         
 
