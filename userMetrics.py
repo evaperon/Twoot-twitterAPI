@@ -11,7 +11,7 @@ MONGO_HOST='mongodb://localhost/twootdb'
 
 client = MongoClient(MONGO_HOST)
 db = client.twootdb 
-collections = [['mondaymotivation', 'DayaAfterChristmas', 'GoldenGlobes', 'JamesHarrison', 'amtrak']
+collections = ['mondaymotivation', 'DayaAfterChristmas', 'GoldenGlobes', 'JamesHarrison', 'amtrak']
 sentimentLabels = { 'pos': 1, 'neutral': 0, 'neg': -1 }
 
 def metrics(collection):
