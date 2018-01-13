@@ -12,7 +12,7 @@ MONGO_HOST='mongodb://localhost/twootdb'
 client = MongoClient(MONGO_HOST)
 db = client.twootdb 
 collections = ['amtrak','JamesHarrison','GoldenGlobes','mondaymotivation', 'DayAfterChristmas']
-customStopWords = [[''],['james','harrison'],['golden','globes'],['monday','motivation'],['day','christmas']]
+customStopWords = [['amtrak'],['james','harrison','jamesharrison'],['golden','globes','goldenglobes'],['monday','motivation','mondaymotivation'],['day','christmas','dayafterchristmas']]
 
 #this function returns the 50 most used words and the whole list of unique word
 #and the times they appear in the collection and the collection's word count
@@ -74,7 +74,7 @@ def parseTweets():
         #add the trend's name to the stopwords (given that the collection's name is the trend's name)
         #load all tweets from the collection
         stopWords.extend(customStopWords[j])
-        print(stopWords)
+        #print(stopWords)
         cursor = db[collection].find()
         tweets = []
         tweetsIds = []
