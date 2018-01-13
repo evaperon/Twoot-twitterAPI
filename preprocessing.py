@@ -1,5 +1,4 @@
 from pymongo import MongoClient
-import nltk
 from nltk.corpus import stopwords
 import matplotlib
 import matplotlib.pyplot as plt
@@ -122,5 +121,5 @@ def main():
         top50WordsWithStopwordRemoval, words, wordC = countUniqueWords(collection)
         doThePlots(top50WordsWithStopwordRemoval, words, wordC)
 
-if __name__== "__main__":
+if __name__ == "__main__":
     main()
