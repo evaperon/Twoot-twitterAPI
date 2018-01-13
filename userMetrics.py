@@ -11,7 +11,7 @@ MONGO_HOST='mongodb://localhost/twootdb'
 
 client = MongoClient(MONGO_HOST)
 db = client.twootdb 
-collections = ['amtrak']#,'Trend2','Trend3','Trend4', 'Trend5']
+collections = [['mondaymotivation', 'DayaAfterChristmas', 'GoldenGlobes', 'JamesHarrison', 'amtrak']
 sentimentLabels = { 'pos': 1, 'neutral': 0, 'neg': -1 }
 
 def metrics(collection):
@@ -20,13 +20,13 @@ def metrics(collection):
     uniqueUserRatio = {} #follower:friend ratio
     for document in cursor:
         if document['user']['id'] in uniqueUserSentiment: #we don't have to check in both dicts since both kave the unique id as key
-            print(document['label'])
+            #print(document['label'])
             if (document['label'] == 'error'):
                 uniqueUserSentiment[document['user']['id']] += 0
             else:
                 uniqueUserSentiment[document['user']['id']] += sentimentLabels[document['label']]
         else:
-            print(document['label'])
+            #print(document['label'])
             if (document['label'] == 'error'):
                 uniqueUserSentiment[document['user']['id']] = 0
             else:
@@ -35,9 +35,9 @@ def metrics(collection):
                 uniqueUserRatio[document['user']['id']] = document['user']['followers_count'] / document['user']['friends_count']
             else:
                 if (document['user']['followers_count']>0):
-                    uniqueUserRatio[document['user']['id']] = math.inf
+                    uniqueUserRatio[document['user']['id']] = 0
                 else:
-                    uniqueUserRatio[document['user']['id']] = None
+                    uniqueUserRatio[document['user']['id']] = 0
     return uniqueUserSentiment, uniqueUserRatio    
 
 def userSentiment(uniqueUserSentiment,collection):
@@ -64,9 +64,9 @@ def userRatio(uniqueUserRatio,collection):
         print( "user: " + repr(user) + " ratio: " + repr(uniqueUserRatio[user]) )
 
 def plotCFD(uniqueUserRatio):
-    #first idea, untested
+    #first idea, something's wrong. result is weird
     '''plt.figure(1)
-    n, bins, patches = plt.hist(uniqueUserRatio, len(uniqueUserRatio), histtype='step', cumulative=True)
+    n, bins, patches = plt.hist(uniqueUserRatio.items() , len(uniqueUserRatio), histtype='step', cumulative=True)
     plt.grid(True)
     plt.title('Cumulative Frequency Distribution')
 
@@ -74,7 +74,7 @@ def plotCFD(uniqueUserRatio):
 
     #second idea, contains two methods, also untested
     '''N = len(uniqueUserRatio)
-    Z = uniqueUserRatio
+    Z = uniqueUserRatio.items()
     # method 1
     H,X1 = np.histogram( Z, bins = 10, normed = True )
     dx = X1[1] - X1[0]
@@ -83,7 +83,7 @@ def plotCFD(uniqueUserRatio):
     X2 = np.sort(Z)
     F2 = np.array(range(N))/float(N)
 
-    plt.plot(X1[1:], F1)
+    #plt.plot(X1[1:], F1)
     plt.plot(X2, F2)
     plt.show()'''
     
