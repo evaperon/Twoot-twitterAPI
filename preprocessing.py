@@ -43,18 +43,18 @@ def doThePlots(top50Words, words, wordC):
     #plotting the word count of the top 50 words
     plt.bar(topWords,wordCounts,align='center')
     plt.xticks(rotation='vertical')
-    plt.ylabel('Word Counts')
+    plt.title('Word Counts')
     
     
     plt.figure(2)
     #plotting the Zipf diagram
     plt.plot(range(len(allTheWords)), allTheWordsC, color='red')
-    plt.ylabel('Zipf')
+    plt.title('Zipf')
 
     #plotting the zipf diagram curve in loglog scale
     plt.figure(3)
     plt.loglog(range(len(allTheWords)), allTheWordsC)
-    plt.ylabel('Word Count')
+    plt.title('Zipf logarithmic scale')
     
     #the following commented part is for lines to show for each bar
     #but it looks bad so I scrapped it
@@ -71,7 +71,7 @@ def parseTweets():
     IDs = []
     j=0
     for collection in collections:
-        #add the trend's name to the stopwords (given that the collection's name is the trend's name)
+
         #load all tweets from the collection
         stopWords.extend(customStopWords[j])
         #print(stopWords)
@@ -104,7 +104,7 @@ def parseTweets():
         collectionsWithStopwords.append(tweets)
         tweetsNoStopwords = []
         for i,tweet in enumerate(tweets):
-            tweetsNoStopwords.append( [word for word in tweets[i] if word not in stopWords and word != collection])
+            tweetsNoStopwords.append( [word for word in tweets[i] if word not in stopWords])
         collectionsWithoutStopwords.append(tweetsNoStopwords)
         stopWords = stopWords[:len(stopWords)-len(customStopWords[j])]
         j+=1
