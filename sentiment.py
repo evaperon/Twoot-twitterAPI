@@ -6,7 +6,7 @@ MONGO_HOST='mongodb://localhost/twootdb'
 
 client = MongoClient(MONGO_HOST)
 db = client.twootdb 
-collections = ['amtrak']#,'Trend2','Trend3','Trend4', 'Trend5']
+collections = ['mondaymotivation', 'DayaAfterChristmas', 'GoldenGlobes', 'JamesHarrison', 'amtrak']
 
 collectionsWithStopwords, collectionsWithoutStopwords, tweetsIds = parseTweets()
 

@@ -9,9 +9,9 @@ MONGO_HOST='mongodb://localhost/twootdb'
 
 client = MongoClient(MONGO_HOST)
 db = client.twootdb 
-collections = ['amtrak']#,'Trend2','Trend3','Trend4', 'Trend5']
+collections = ['mondaymotivation', 'DayAfterChristmas', 'GoldenGlobes', 'JamesHarrison', 'amtrak']
 
-stopWords =  stopwords.words('english')
+stopWords = stopwords.words('english')
 
 #this function returns the 50 most used words and the whole list of unique word
 #and the times they appear in the collection and the collection's word count
@@ -56,7 +56,7 @@ def doThePlots(top50Words, words, wordC):
     #plt.subplot(212)
     plt.bar(topWords,wordCounts,align='center')
     plt.xticks(rotation='vertical')
-    plt.ylabel('Word Counts')
+    plt.title('Word Counts')
     
     
     plt.figure(2)
@@ -65,13 +65,13 @@ def doThePlots(top50Words, words, wordC):
     plt.plot(range(len(allTheWords)), allTheWordsC, color='red')
     #plt.bar(range(len(allTheWords)), allTheWordsC, tick_label=' ', align='center', color='red')
     #plt.xticks(range(len(allTheWords)), allTheWords, rotation='vertical')
-    plt.ylabel('Zipf')
+    plt.title('Zipf')
 
     #plotting the zipf diagram curve in loglog scale
     plt.figure(3)
     plt.loglog(range(len(allTheWords)), allTheWordsC)
     #plt.xticks(range(len(allTheWords)), allTheWords, rotation='vertical')
-    plt.ylabel('Word Count')
+    plt.title('Zipf log scale')
     
     #the following commented part is for lines to show for each bar
     #but it looks bad so I scrapped it
@@ -125,7 +125,7 @@ def parseTweets():
         #print(tweets[0])
         tweetsNoStopwords = []
         for i,tweet in enumerate(tweets):
-            tweetsNoStopwords.append( [word for word in tweets[i] if word not in stopWords and word != collection])
+            tweetsNoStopwords.append( [word for word in tweets[i] if word not in stopWords and word != collection.lower()])
         #print(tweetsNoStopwords[0])
         collectionsWithoutStopwords.append(tweetsNoStopwords)
         
