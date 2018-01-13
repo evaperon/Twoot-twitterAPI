@@ -5,13 +5,14 @@
 from pymongo import MongoClient
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib import mlab
 import math
 
 MONGO_HOST='mongodb://localhost/twootdb'
 
 client = MongoClient(MONGO_HOST)
 db = client.twootdb 
-collections = ['mondaymotivation', 'DayaAfterChristmas', 'GoldenGlobes', 'JamesHarrison', 'amtrak']
+collections = [ 'amtrak'] #, 'DayaAfterChristmas', 'GoldenGlobes', 'JamesHarrison', 'mondaymotivation']
 sentimentLabels = { 'pos': 1, 'neutral': 0, 'neg': -1 }
 
 def metrics(collection):
@@ -63,29 +64,30 @@ def userRatio(uniqueUserRatio,collection):
         
         print( "user: " + repr(user) + " ratio: " + repr(uniqueUserRatio[user]) )
 
-def plotCFD(uniqueUserRatio):
-    #first idea, something's wrong. result is weird
-    '''plt.figure(1)
-    n, bins, patches = plt.hist(uniqueUserRatio.items() , len(uniqueUserRatio), histtype='step', cumulative=True)
-    plt.grid(True)
-    plt.title('Cumulative Frequency Distribution')
+def plotCFD(uniqueUserRatio):  
+    
+    plt.figure(1)
+    Y = list(uniqueUserRatio.values())
 
-    plt.show()'''
+    ySum = 0.0
+    for i in Y:
+        ySum += i
+    for i, item in enumerate(Y):
+        Y[i] /= ySum
 
-    #second idea, contains two methods, also untested
-    '''N = len(uniqueUserRatio)
-    Z = uniqueUserRatio.items()
-    # method 1
-    H,X1 = np.histogram( Z, bins = 10, normed = True )
-    dx = X1[1] - X1[0]
-    F1 = np.cumsum(H)*dx
-    #method 2
-    X2 = np.sort(Z)
-    F2 = np.array(range(N))/float(N)
+    CY = np.cumsum(Y)
 
-    #plt.plot(X1[1:], F1)
-    plt.plot(X2, F2)
-    plt.show()'''
+
+    plt.subplot(211)
+    #plt.plot(Y, drawstyle='steps')
+    plt.plot(CY,'r--', drawstyle='steps')
+    
+    plt.subplot(212)
+    #plt.plot(Y)
+    plt.plot(CY,'r--')
+    
+    plt.show()
+    
     
 
 def main():
@@ -93,12 +95,12 @@ def main():
         
         uniqueUserSentiment, uniqueUserRatio = metrics(collection)
 
-        userSentiment(uniqueUserSentiment,collection)
+        '''userSentiment(uniqueUserSentiment,collection)
 
-        userRatio(uniqueUserRatio,collection)
+        userRatio(uniqueUserRatio,collection)'''
         
 
-        #plotCFD(uniqueUserRatio)
+        plotCFD(uniqueUserRatio)
 
         
 
