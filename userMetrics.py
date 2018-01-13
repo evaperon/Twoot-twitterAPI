@@ -73,7 +73,7 @@ def plotCFD(uniqueUserRatio):
     plt.show()'''
 
     #second idea, contains two methods, also untested
-    N = len(uniqueUserRatio)
+    '''N = len(uniqueUserRatio)
     Z = uniqueUserRatio.values()
     # method 1
     '''H,X1 = np.histogram( Z, bins = 10, normed = True )
@@ -85,7 +85,7 @@ def plotCFD(uniqueUserRatio):
 
     #plt.plot(X1[1:], F1)
     plt.plot(X2, F2)
-    plt.show()
+    plt.show()'''
     
 
 def main():
@@ -93,12 +93,12 @@ def main():
         
         uniqueUserSentiment, uniqueUserRatio = metrics(collection)
 
-        '''userSentiment(uniqueUserSentiment,collection)
+        userSentiment(uniqueUserSentiment,collection)
 
-        userRatio(uniqueUserRatio,collection)'''
+        userRatio(uniqueUserRatio,collection)
         
 
-        plotCFD(uniqueUserRatio)
+        #plotCFD(uniqueUserRatio)
 
         
 
