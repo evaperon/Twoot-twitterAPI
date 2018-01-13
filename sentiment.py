@@ -1,4 +1,3 @@
-
 from pymongo import MongoClient
 import requests
 from preprocessing import parseTweets
@@ -16,7 +15,7 @@ count = 0
 for i,collection in enumerate(collectionsWithoutStopwords):
     for j,tweet in enumerate(collection):
         try:
-            print(tweet)
+            print(tweet)        
             r = requests.post("http://text-processing.com/api/sentiment/", data={'text':tweet })
             print(r.status_code, r.reason)
             print(r.json())
@@ -34,3 +33,4 @@ for i,collection in enumerate(collectionsWithoutStopwords):
             {"$set": {"label": 'error', "positive_probability": 0 , "negative_probability": 0 ,"neutral_probability": 0}})
             print(up.matched_count)
             print(count)
+                 

@@ -66,7 +66,7 @@ def userRatio(uniqueUserRatio,collection):
 def plotCFD(uniqueUserRatio):
     #first idea, something's wrong. result is weird
     '''plt.figure(1)
-    n, bins, patches = plt.hist(uniqueUserRatio.keys() , len(uniqueUserRatio), histtype='step', cumulative=True)
+    n, bins, patches = plt.hist(uniqueUserRatio.items() , len(uniqueUserRatio), histtype='step', cumulative=True)
     plt.grid(True)
     plt.title('Cumulative Frequency Distribution')
 
@@ -74,11 +74,11 @@ def plotCFD(uniqueUserRatio):
 
     #second idea, contains two methods, also untested
     '''N = len(uniqueUserRatio)
-    Z = uniqueUserRatio.values()
+    Z = uniqueUserRatio.items()
     # method 1
-    '''H,X1 = np.histogram( Z, bins = 10, normed = True )
+    H,X1 = np.histogram( Z, bins = 10, normed = True )
     dx = X1[1] - X1[0]
-    F1 = np.cumsum(H)*dx'''
+    F1 = np.cumsum(H)*dx
     #method 2
     X2 = np.sort(Z)
     F2 = np.array(range(N))/float(N)
