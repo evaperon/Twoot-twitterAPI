@@ -1,12 +1,10 @@
 from pymongo import MongoClient
-import nltk
 from nltk.corpus import stopwords
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import string
 
-#nltk.download()
 MONGO_HOST='mongodb://localhost/twootdb'
 
 client = MongoClient(MONGO_HOST)
@@ -102,7 +100,8 @@ def parseTweets():
             #store only the text from each tweet
             tweets.append(document['text'])
             tweetsIds.append(document['_id'])
-
+              
+    	
         IDs.append(tweetsIds)
         for i,tweet in enumerate(tweets):
             #if 'amtrak' not in tweet:
@@ -130,18 +129,20 @@ def parseTweets():
         #print(tweetsNoStopwords[0])
         collectionsWithoutStopwords.append(tweetsNoStopwords)
         
-    return collectionsWithStopwords, collectionsWithoutStopwords,IDs
         
+    return collectionsWithStopwords, collectionsWithoutStopwords, IDs
+
+
 def main():
     
-    collectionsWithStopwords,collectionsWithoutStopwords, dump = parseTweets()  
+    collectionsWithStopwords,collectionsWithoutStopwords,dummy = parseTweets()  
     for collection in collectionsWithStopwords:    
         top50WordsWithoutStopwordRemoval, words, wordC = countUniqueWords(collection)
         doThePlots(top50WordsWithoutStopwordRemoval, words, wordC)
-
+    
     for collection in collectionsWithoutStopwords:    
         top50WordsWithStopwordRemoval, words, wordC = countUniqueWords(collection)
         doThePlots(top50WordsWithStopwordRemoval, words, wordC)
 
-if __name__== "__main__":
+if __name__ == "__main__":
     main()
