@@ -11,10 +11,8 @@ MONGO_HOST='mongodb://localhost/twootdb'
 
 client = MongoClient(MONGO_HOST)
 db = client.twootdb 
-
-collections = ['mondaymotivation', 'DayAfterChristmas', 'GoldenGlobes', 'JamesHarrison', 'amtrak']
-
-stopWords = stopwords.words('english')
+collections = ['amtrak','JamesHarrison','GoldenGlobes','mondaymotivation', 'DayAfterChristmas']
+customStopWords = [[''],['james','harrison'],['golden','globes'],['monday','motivation'],['day','christmas']]
 
 #this function returns the 50 most used words and the whole list of unique word
 #and the times they appear in the collection and the collection's word count
@@ -45,23 +43,18 @@ def doThePlots(top50Words, words, wordC):
     #plotting the word count of the top 50 words
     plt.bar(topWords,wordCounts,align='center')
     plt.xticks(rotation='vertical')
-    plt.title('Word Counts')
+    plt.ylabel('Word Counts')
     
     
     plt.figure(2)
     #plotting the Zipf diagram
     plt.plot(range(len(allTheWords)), allTheWordsC, color='red')
-
-    #plt.bar(range(len(allTheWords)), allTheWordsC, tick_label=' ', align='center', color='red')
-    #plt.xticks(range(len(allTheWords)), allTheWords, rotation='vertical')
-    plt.title('Zipf')
+    plt.ylabel('Zipf')
 
     #plotting the zipf diagram curve in loglog scale
     plt.figure(3)
     plt.loglog(range(len(allTheWords)), allTheWordsC)
-    #plt.xticks(range(len(allTheWords)), allTheWords, rotation='vertical')
-    plt.title('Zipf log scale')
-
+    plt.ylabel('Word Count')
     
     #the following commented part is for lines to show for each bar
     #but it looks bad so I scrapped it
@@ -72,13 +65,16 @@ def doThePlots(top50Words, words, wordC):
 
 def parseTweets():
     #for every trend
+    stopWords =  stopwords.words('english')
     collectionsWithStopwords = []
     collectionsWithoutStopwords = []
     IDs = []
-    
+    j=0
     for collection in collections:
         #add the trend's name to the stopwords (given that the collection's name is the trend's name)
         #load all tweets from the collection
+        stopWords.extend(customStopWords[j])
+        print(stopWords)
         cursor = db[collection].find()
         tweets = []
         tweetsIds = []
@@ -108,11 +104,10 @@ def parseTweets():
         collectionsWithStopwords.append(tweets)
         tweetsNoStopwords = []
         for i,tweet in enumerate(tweets):
-
-            tweetsNoStopwords.append( [word for word in tweets[i] if word not in stopWords and word != collection.lower()])
-        #print(tweetsNoStopwords[0])
-
+            tweetsNoStopwords.append( [word for word in tweets[i] if word not in stopWords and word != collection])
         collectionsWithoutStopwords.append(tweetsNoStopwords)
+        stopWords = stopWords[:len(stopWords)-len(customStopWords[j])]
+        j+=1
     #returns the original collections, the collections after we removed the stopwords and the tweets' IDs    
     return collectionsWithStopwords, collectionsWithoutStopwords,IDs
         
