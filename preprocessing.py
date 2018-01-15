@@ -11,7 +11,7 @@ MONGO_HOST='mongodb://localhost/twootdb'
 client = MongoClient(MONGO_HOST)
 db = client.twootdb
 collections = ['amtrak','JamesHarrison','GoldenGlobes','mondaymotivation', 'DayAfterChristmas']
-customStopWords = [['amtrak', 'amtraks'],['james','harrison','jamesharrison'],['golden','globes','goldenglobes'],['monday','motivation','mondaymotivation'],['day','christmas','dayafterchristmas','christmasday','afterchristmas']]
+customStopWords = {'amtrak':['amtrak', 'amtraks'],'JamesHarrison':['james','harrison','jamesharrison'],'GoldenGlobes':['golden','globes','goldenglobes'],'mondaymotivation':['monday','motivation','mondaymotivation'],'DayAfterChristmas':['day','christmas','dayafterchristmas','christmasday','afterchristmas']}
 
 #this function returns the 50 most used words and the whole list of unique word
 #and the times they appear in the collection and the collection's word count
@@ -63,11 +63,9 @@ def parseTweets():
     collectionsWithStopwords = []
     collectionsWithoutStopwords = []
     IDs = []
-    j = 0
     for collection in collections:
 
         #load all tweets from the collection
-        stopWords.extend(customStopWords[j])
         cursor = db[collection].find()
         tweets = []
         tweetsIds = []
@@ -97,13 +95,9 @@ def parseTweets():
         collectionsWithStopwords.append(tweets)
         tweetsNoStopwords = []
         for i,tweet in enumerate(tweets):
-            tweetsNoStopwords.append( [word for word in tweets[i] if word not in stopWords])
+            tweetsNoStopwords.append( [word for word in tweets[i] if word not in stopWords and word not in customStopWords[collection]])
         collectionsWithoutStopwords.append(tweetsNoStopwords)
-        for i, item in enumerate(customStopWords[j]):
-            stopWords.remove(customStopWords[j][i])
-        #stopWords = stopWords[:len(stopWords)-len(customStopWords[j])]
-        #^this might be faster than remove according to this https://stackoverflow.com/questions/5745881/fast-way-to-remove-a-few-items-from-a-list-queue
-        j += 1
+        
     #returns the original collections, the collections after we removed the stopwords and the tweets' IDs    
     return collectionsWithStopwords, collectionsWithoutStopwords,IDs
         

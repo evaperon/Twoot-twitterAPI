@@ -5,8 +5,8 @@ from preprocessing import parseTweets
 MONGO_HOST='mongodb://localhost/twootdb'
 
 client = MongoClient(MONGO_HOST)
-db = client.twootdb 
-collections = ['amtrak', 'JamesHarrison', 'GoldenGlobes', 'mondaymotivation', 'DayaAfterChristmas' ]
+db = client.twootdb
+collections = ['amtrak', 'JamesHarrison', 'GoldenGlobes', 'mondaymotivation', 'DayAfterChristmas']
 
 collectionsWithStopwords, collectionsWithoutStopwords, tweetsIds = parseTweets()
 
