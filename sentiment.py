@@ -6,7 +6,7 @@ MONGO_HOST='mongodb://localhost/twootdb'
 
 client = MongoClient(MONGO_HOST)
 db = client.twootdb 
-collections = ['mondaymotivation', 'DayaAfterChristmas', 'GoldenGlobes', 'JamesHarrison', 'amtrak']
+collections = ['amtrak', 'JamesHarrison', 'GoldenGlobes', 'mondaymotivation', 'DayaAfterChristmas' ]
 
 collectionsWithStopwords, collectionsWithoutStopwords, tweetsIds = parseTweets()
 
@@ -15,8 +15,9 @@ count = 0
 for i,collection in enumerate(collectionsWithoutStopwords):
     for j,tweet in enumerate(collection):
         try:
-            print(tweet)        
-            r = requests.post("http://text-processing.com/api/sentiment/", data={'text':tweet })
+            print(tweet)
+            strTweet = ' '.join(tweet)
+            r = requests.post("http://text-processing.com/api/sentiment/", data={'text':strTweet })
             print(r.status_code, r.reason)
             print(r.json())
             count += 1
