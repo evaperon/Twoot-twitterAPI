@@ -9,9 +9,9 @@ import string
 MONGO_HOST='mongodb://localhost/twootdb'
 
 client = MongoClient(MONGO_HOST)
-db = client.twootdb 
+db = client.twootdb
 collections = ['amtrak','JamesHarrison','GoldenGlobes','mondaymotivation', 'DayAfterChristmas']
-customStopWords = [['amtrak'],['james','harrison','jamesharrison'],['golden','globes','goldenglobes'],['monday','motivation','mondaymotivation'],['day','christmas','dayafterchristmas']]
+customStopWords = [['amtrak', 'amtraks'],['james','harrison','jamesharrison'],['golden','globes','goldenglobes'],['monday','motivation','mondaymotivation'],['day','christmas','dayafterchristmas','christmasday','afterchristmas']]
 
 #this function returns the 50 most used words and the whole list of unique word
 #and the times they appear in the collection and the collection's word count
@@ -30,7 +30,7 @@ def countUniqueWords(tweets):
     top50 = sortedWords[:50]
     return top50, sortedWords, wordCount
 
-def doThePlots(top50Words, words, wordC):
+def doThePlots(top50Words, words, wordC, count):
     words100 = words[:100]
     allTheWords = [i[0] for i in words100]
     allTheWordsC = [i[1] for i in words100]
@@ -42,23 +42,18 @@ def doThePlots(top50Words, words, wordC):
     #plotting the word count of the top 50 words
     plt.bar(topWords,wordCounts,align='center')
     plt.xticks(rotation='vertical')
-    plt.title('Word Counts')
+    plt.title('Word Counts for <' + collections[count] + '>')
     
-    
+    '''
     plt.figure(2)
     #plotting the Zipf diagram
     plt.plot(range(len(allTheWords)), allTheWordsC, color='red')
-    plt.title('Zipf')
+    plt.title('Zipf for <' + collections[count] + '>')
 
     #plotting the zipf diagram curve in loglog scale
     plt.figure(3)
     plt.loglog(range(len(allTheWords)), allTheWordsC)
-    plt.title('Zipf logarithmic scale')
-    
-    #the following commented part is for lines to show for each bar
-    #but it looks bad so I scrapped it
-    #for i in range(len(wordCounts)):
-    #plt.hlines(wordCounts[i],0,topWords[i])
+    plt.title('Zipf logarithmic scale for <' + collections[count] + '>')'''
     
     plt.show()
 
@@ -68,12 +63,11 @@ def parseTweets():
     collectionsWithStopwords = []
     collectionsWithoutStopwords = []
     IDs = []
-    j=0
+    j = 0
     for collection in collections:
 
         #load all tweets from the collection
         stopWords.extend(customStopWords[j])
-        #print(stopWords)
         cursor = db[collection].find()
         tweets = []
         tweetsIds = []
@@ -92,34 +86,40 @@ def parseTweets():
             #remove punctuation
             punctuation = '.?!:,$<>;`~’"-#@&*^()/\[]{}|-_+=…'
             punctuation+= "'"
-            for p in punctuation: #isws ginetai pio apodotika me REGEX?
+            for p in punctuation:
                 tweets[i][:] = [word.replace(p, "")  for word in tweets[i] ]
     
     	
             
             #remove special characters, numbers and stopwords and normalize the remaining words
-            tweets[i][:] = [word.lower() for word in tweets[i] if word.isalpha()  ] 
+            tweets[i][:] = [word.lower() for word in tweets[i] if word.isalpha()] 
  
         collectionsWithStopwords.append(tweets)
         tweetsNoStopwords = []
         for i,tweet in enumerate(tweets):
             tweetsNoStopwords.append( [word for word in tweets[i] if word not in stopWords])
         collectionsWithoutStopwords.append(tweetsNoStopwords)
-        stopWords = stopWords[:len(stopWords)-len(customStopWords[j])]
-        j+=1
+        for i, item in enumerate(customStopWords[j]):
+            stopWords.remove(customStopWords[j][i])
+        #stopWords = stopWords[:len(stopWords)-len(customStopWords[j])]
+        #^this might be faster than remove according to this https://stackoverflow.com/questions/5745881/fast-way-to-remove-a-few-items-from-a-list-queue
+        j += 1
     #returns the original collections, the collections after we removed the stopwords and the tweets' IDs    
     return collectionsWithStopwords, collectionsWithoutStopwords,IDs
         
 def main():
     
-    collectionsWithStopwords,collectionsWithoutStopwords, dump = parseTweets()  
+    collectionsWithStopwords,collectionsWithoutStopwords, dump = parseTweets()
+    i = 0
     for collection in collectionsWithStopwords:    
         top50WordsWithoutStopwordRemoval, words, wordC = countUniqueWords(collection)
-        doThePlots(top50WordsWithoutStopwordRemoval, words, wordC)
-
+        doThePlots(top50WordsWithoutStopwordRemoval, words, wordC, i)
+        i += 1
+    i = 0
     for collection in collectionsWithoutStopwords:    
         top50WordsWithStopwordRemoval, words, wordC = countUniqueWords(collection)
-        doThePlots(top50WordsWithStopwordRemoval, words, wordC)
+        doThePlots(top50WordsWithStopwordRemoval, words, wordC, i)
+        i += 1
 
 if __name__ == "__main__":
     main()
