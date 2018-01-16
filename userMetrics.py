@@ -12,9 +12,7 @@ MONGO_HOST='mongodb://localhost/twootdb'
 
 client = MongoClient(MONGO_HOST)
 db = client.twootdb 
-
 collections = [ 'amtrak'] #, 'DayaAfterChristmas', 'GoldenGlobes', 'JamesHarrison', 'mondaymotivation']
-
 sentimentLabels = { 'pos': 1, 'neutral': 0, 'neg': -1 }
 
 def metrics(collection):
@@ -79,15 +77,9 @@ def plotCFD(uniqueUserRatio):
 
     CY = np.cumsum(Y)
 
-
-    plt.subplot(211)
-    #plt.plot(Y, drawstyle='steps')
     plt.plot(CY,'r--', drawstyle='steps')
-    
-    plt.subplot(212)
-    #plt.plot(Y)
-    plt.plot(CY,'r--')
-    
+    plt.title('Cumulative Frequency Distribution')
+
     plt.show()
     
     
@@ -97,9 +89,9 @@ def main():
         
         uniqueUserSentiment, uniqueUserRatio = metrics(collection)
 
-        '''userSentiment(uniqueUserSentiment,collection)
+        userSentiment(uniqueUserSentiment,collection)
 
-        userRatio(uniqueUserRatio,collection)'''
+        userRatio(uniqueUserRatio,collection)
         
 
         plotCFD(uniqueUserRatio)
