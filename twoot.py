@@ -1,33 +1,22 @@
 import tweepy
-#import unicodedata
 from pymongo import MongoClient
 import json
 
 MONGO_HOST='mongodb://localhost/twootdb'
+DATABASE = 'twootdb'
+NUMTWEETS = 1500
+NUMTRENDS = 5
 
-auth = tweepy.OAuthHandler(secret)
-auth.set_access_token(secret)
+#Replace with your private keys
+KEY = '' 
+TOKEN = ''
+
+auth = tweepy.OAuthHandler(KEY)
+auth.set_access_token(TOKEN)
 
 api = tweepy.API(auth)
 
-    
-trends1 = api.trends_place(23424977)
-# trends1 is a list with only one element in it, which is a 
-# dict which we'll put in data.
-data = trends1[0] 
-# grab the trends
-trends = data['trends']
-# grab the name from each trend
-names = [trend['name'] for trend in trends]
-#grab the first five trends
-topFive = names[:5]
-# put all the names together with a ' ' separating them
-trendsName = ' '.join(topFive) # why?
-#print(trendsName)
-
-
-
-#override tweepy.StreamListener to add logic to on_status
+#Override tweepy.StreamListener to add logic to its methods
 class MyStreamListener(tweepy.StreamListener):
     
     def on_connect(self):
@@ -39,36 +28,50 @@ class MyStreamListener(tweepy.StreamListener):
         print('An Error has occured: ' + repr(status_code))
         return False
 
-    def __init__(self, database, collection, api=None):
+    def __init__(self, database, collection, numTweetsToCollect, api=None):
         super().__init__()
         self.num_tweets = 0
         self.collection = collection
+        self.numTweetsToCollect = numTweetsToCollect
         try:
             client = MongoClient(MONGO_HOST)            
-            # Use twootdb database. If it doesn't exist, it will be created.
+            # Use the specified database. If it doesn't exist, it will be created.
             self.db = client[database]   
         except Exception as e:
            print(e)
     
     def on_data(self, data):
-        if self.num_tweets<1500:
+        if self.num_tweets<self.numTweetsToCollect:
             # Decode the JSON from Twitter
             datajson = json.loads(data)
-            #filerin retweets
+            #Filering retweets to make sure that retweets are not taken into account
             if not (datajson['retweeted'] or datajson['text'].startswith('RT')):
-                #tweet=''.join(c for c in unicodedata.normalize('NFC', data.text) if c <= '\uFFFF')
-                #print (tweet)
                 self.num_tweets+=1
                 try:
+                	#Insert the tweet in JSON format in a collection named after the trend 
+                	#If the collection doesn't exist, it will be created
                     self.db[self.collection].insert_one(datajson)
                 except Exception as e:
                    print(e)
             return True
         else:
-             #stop streaming
+             #Stop streaming when numTweetsToCollect tweets have been gathered
              return False
+
+trends1 = api.trends_place(23424977)
+# Trends1 is a list with only one element in it, which is a dict which we'll put in data.
+data = trends1[0] 
+# Grab the trends
+trends = data['trends']
+# Grab the name from each trend
+names = [trend['name'] for trend in trends]
+#Grab the first NUMTRENDS trends
+topTrends = names[:NUMTRENDS]
           
-for trend in topFive:
-    myStreamListener = MyStreamListener('twootdb',trend)
+#Collect NUMTWEETS tweets for every trend
+for trend in topTrends:
+	#Connect to the Twitter Stream
+    myStreamListener = MyStreamListener(DATABASE,trend, NUMTWEETS)
     myStream = tweepy.Stream(auth = api.auth, listener=myStreamListener)
+    #Gather tweets only related to the specified trend and in the english language
     myStream.filter(track=[trend],languages=["en"])
