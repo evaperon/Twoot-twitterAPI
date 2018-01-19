@@ -5,18 +5,17 @@ from preprocessing import parseTweets
 MONGO_HOST='mongodb://localhost/twootdb'
 
 client = MongoClient(MONGO_HOST)
-db = client.twootdb
-collections = ['amtrak', 'JamesHarrison', 'GoldenGlobes', 'mondaymotivation', 'DayAfterChristmas']
+db = client.twootdb 
 
-collectionsWithStopwords, collectionsWithoutStopwords, tweetsIds = parseTweets()
+collections, collectionsWithStopwords, collectionsWithoutStopwords, tweetsIds = parseTweets()
 
 tweetsWithLabels = {}
 count = 0
 for i,collection in enumerate(collectionsWithoutStopwords):
     for j,tweet in enumerate(collection):
         try:
-            print(tweet)
             strTweet = ' '.join(tweet)
+            print(strTweet)        
             r = requests.post("http://text-processing.com/api/sentiment/", data={'text':strTweet })
             print(r.status_code, r.reason)
             print(r.json())
