@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 from preprocessing import parseTweets
 import matplotlib.pyplot as plt
 
