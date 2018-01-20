@@ -29,14 +29,15 @@ def doThePlots(collection, top50Words, words, wordC, count, zipf):
     #Plotting the word count of the top 50 words
     plt.bar(topWords,wordCounts,align='center')
     plt.xticks(rotation='vertical')
-    plt.title('Word Counts for <' + collection+ '>')
+    plt.title('top 50 word count for <' + collection+ '>')
     
 
     if zipf == True:
         #Plotting the zipf diagram curve in loglog scale
-        plt.figure(3)
-        plt.loglog(range(len(allTheWords)), allTheWordsC)
+        plt.figure(2)
+        plt.loglog(range(len(allTheWords)), allTheWordsC, linestyle='None', marker='.', label='empirical')
         plt.title('Zipf logarithmic scale for <' + collection + '>')
+        #plt.legend()
     
     plt.show()
     
@@ -58,4 +59,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
