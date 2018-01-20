@@ -1,7 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
-
 from pymongo import MongoClient
 import numpy as np
 import matplotlib.pyplot as plt
