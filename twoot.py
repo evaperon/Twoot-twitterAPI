@@ -2,8 +2,8 @@ import tweepy
 from pymongo import MongoClient
 import json
 
-MONGO_HOST='mongodb://localhost/twootdb'
-DATABASE = 'twootdb'
+MONGO_HOST='mongodb://localhost'
+DATABASE = '2492_2562_2592'
 NUMTWEETS = 1500
 NUMTRENDS = 5
 

@@ -1,14 +1,14 @@
 from pymongo import MongoClient
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib import mlab
-import math
 
-MONGO_HOST='mongodb://localhost/twootdb'
+MONGO_HOST='mongodb://localhost'
+DATABASE = '2492_2562_2592'
 
 client = MongoClient(MONGO_HOST)
-db = client.twootdb 
-collections = [ 'amtrak'] #, 'DayaAfterChristmas', 'GoldenGlobes', 'JamesHarrison', 'mondaymotivation']
+db = client[DATABASE]
+
+collections = ['amtrak','JamesHarrison','GoldenGlobes','MondayMotivation', 'DayAfterChristmas']
 sentimentLabels = { 'pos': 1, 'neutral': 0, 'neg': -1 }
 
 def metrics(collection):
@@ -16,14 +16,12 @@ def metrics(collection):
     uniqueUserSentiment = {}
     uniqueUserRatio = {} #follower:friend ratio
     for document in cursor:
-        if document['user']['id'] in uniqueUserSentiment: #we don't have to check in both dicts since both kave the unique id as key
-            #print(document['label'])
+        if document['user']['id'] in uniqueUserSentiment: #We don't have to check in both dicts since both kave the unique id as key
             if (document['label'] == 'error'):
                 uniqueUserSentiment[document['user']['id']] += 0
             else:
                 uniqueUserSentiment[document['user']['id']] += sentimentLabels[document['label']]
         else:
-            #print(document['label'])
             if (document['label'] == 'error'):
                 uniqueUserSentiment[document['user']['id']] = 0
             else:
@@ -41,8 +39,6 @@ def userSentiment(uniqueUserSentiment,collection):
     #User Sentiment
     print("Below is the sentiment of the users around the topic : " + collection)
     for i,user in enumerate(uniqueUserSentiment):
-        #print(type(uniqueUserSentiment))
-        #print(type(user))
 
         if ( uniqueUserSentiment[user] > 0):
             print( "user: " + repr(user) + " sentiment: positive" )
@@ -55,9 +51,6 @@ def userRatio(uniqueUserRatio,collection):
     #User follower to friend ratio
     print("Below is the follower to friend ratio of the users that posted about the topic : " + collection)
     for i,user in enumerate(uniqueUserRatio):
-        #print(type(uniqueUserRatio))
-        #print(type(user))
-        
         print( "user: " + repr(user) + " ratio: " + repr(uniqueUserRatio[user]) )
 
 def plotCFD(uniqueUserRatio):  
@@ -72,7 +65,8 @@ def plotCFD(uniqueUserRatio):
         Y[i] /= ySum
 
     CY = np.cumsum(Y)
-
+    
+    plt.plot(Y)
     plt.plot(CY,'r--', drawstyle='steps')
     plt.title('Cumulative Frequency Distribution')
 
@@ -80,19 +74,16 @@ def plotCFD(uniqueUserRatio):
     
     
 
-def main():
-    for collection in collections:
+
+for collection in collections:
+    
+    uniqueUserSentiment, uniqueUserRatio = metrics(collection)
+
+    userSentiment(uniqueUserSentiment,collection)
+
+    userRatio(uniqueUserRatio,collection)
+    
+
+    plotCFD(uniqueUserRatio)
+
         
-        uniqueUserSentiment, uniqueUserRatio = metrics(collection)
-
-        userSentiment(uniqueUserSentiment,collection)
-
-        userRatio(uniqueUserRatio,collection)
-        
-
-        plotCFD(uniqueUserRatio)
-
-        
-
-if __name__ == "__main__":
-    main()

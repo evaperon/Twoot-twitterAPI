@@ -33,7 +33,7 @@ def doThePlots(collection, top50Words, words, wordC, count, zipf):
     
 
     if zipf == True:
-        #Plotting the zipf diagram curve in loglog scale
+        #Plotting the zipf diagram curve in logarithmic scale
         plt.figure(2)
         plt.loglog(range(len(allTheWords)), allTheWordsC, linestyle='None', marker='.', label='empirical')
         plt.title('Zipf logarithmic scale for <' + collection + '>')

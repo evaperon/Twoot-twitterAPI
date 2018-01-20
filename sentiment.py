@@ -3,10 +3,11 @@ import requests
 from preprocessing import parseTweets
 import matplotlib.pyplot as plt
 
-MONGO_HOST='mongodb://localhost/twootdb'
+MONGO_HOST='mongodb://localhost'
+DATABASE = '2492_2562_2592'
 
 client = MongoClient(MONGO_HOST)
-db = client.twootdb 
+db = client[DATABASE]
 
 collections, collectionsWithStopwords, collectionsWithoutStopwords, tweetsIds = parseTweets()
 
@@ -48,6 +49,6 @@ plt.show()
      
 #Uncomment in order to run the above
 '''  
-addSentiment()        
+addSentiment()       
 pies()
 '''

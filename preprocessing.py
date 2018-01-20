@@ -2,13 +2,13 @@ from pymongo import MongoClient
 from nltk.corpus import stopwords
 
 
-MONGO_HOST='mongodb://localhost/twootdb'
-DATABASE = 'twootdb'
+MONGO_HOST='mongodb://localhost'
+DATABASE = '2492_2562_2592'
 
 client = MongoClient(MONGO_HOST)
 db = client[DATABASE]
-collections = ['amtrak','JamesHarrison','GoldenGlobes','mondaymotivation', 'DayAfterChristmas']
-customStopWords = {'amtrak':['amtrak', 'amtraks'],'JamesHarrison':['james','harrison','jamesharrison'],'GoldenGlobes':['golden','globes','goldenglobes'],'mondaymotivation':['monday','motivation','mondaymotivation'],'DayAfterChristmas':['day','christmas','dayafterchristmas','christmasday','afterchristmas']}
+collections = ['amtrak','JamesHarrison','GoldenGlobes','MondayMotivation', 'DayAfterChristmas']
+customStopWords = {'amtrak':['amtrak', 'amtraks'],'JamesHarrison':['james','harrison','jamesharrison'],'GoldenGlobes':['golden','globes','goldenglobes'],'MondayMotivation':['monday','motivation','mondaymotivation'],'DayAfterChristmas':['day','christmas','dayafterchristmas','christmasday','afterchristmas']}
 
 
 def parseTweets():
