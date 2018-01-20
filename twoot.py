@@ -44,7 +44,7 @@ class MyStreamListener(tweepy.StreamListener):
         if self.num_tweets<self.numTweetsToCollect:
             # Decode the JSON from Twitter
             datajson = json.loads(data)
-            #Filering retweets to make sure that retweets are not taken into account
+            #Filtering retweets to make sure that retweets are not taken into account
             if not (datajson['retweeted'] or datajson['text'].startswith('RT')):
                 self.num_tweets+=1
                 try:
