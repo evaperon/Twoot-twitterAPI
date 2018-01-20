@@ -17,8 +17,6 @@ def addSentiment():
             try:
                 strTweet = ' '.join(tweet) #Transform the list to a string        
                 r = requests.post("http://text-processing.com/api/sentiment/", data={'text':strTweet })
-                #print(r.status_code, r.reason)
-                #print(r.json())
                 count += 1
                 db[collections[i]].update_one(
                 {"_id": tweetsIds[i][j] },
@@ -39,17 +37,17 @@ def pies():
         print(frequencies)
         
         #Plot pie
-        labels = list(frequencies.keys())
-        sizes = list(frequencies.values())
-        plotColors= '#38C477', 'khaki', '#F2543D', '#EEEEEE'
+        labels = list(frequencies.keys())[:3]
+        sizes = list(frequencies.values())[:3]
+        plotColors= '#38C477', 'khaki', '#F2543D'
         fig1, ax1 = plt.subplots()
         ax1.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=90, colors=plotColors)
         ax1.axis('equal') # Equal aspect ratio ensures that pie is drawn as a circle
         plt.title('Sentiment ratio for  <' + collection+ '>')
-        plt.show()
+plt.show()
      
 #Uncomment in order to run the above
 '''  
-addSentiment()'''      
+addSentiment()        
 pies()
-
+'''
