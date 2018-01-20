@@ -53,7 +53,7 @@ def userRatio(uniqueUserRatio,collection):
     for i,user in enumerate(uniqueUserRatio):
         print( "user: " + repr(user) + " ratio: " + repr(uniqueUserRatio[user]) )
 
-def plotCFD(uniqueUserRatio):  
+def plotCFD(uniqueUserRatio, collection):  
     
     plt.figure(1)
     Y = list(uniqueUserRatio.values())
@@ -66,9 +66,8 @@ def plotCFD(uniqueUserRatio):
 
     CY = np.cumsum(Y)
     
-    plt.plot(Y)
     plt.plot(CY,'r--', drawstyle='steps')
-    plt.title('Cumulative Frequency Distribution')
+    plt.title('Cumulative Frequency Distribution \n of follower:friend ratio on <' + collection+ '>')
 
     plt.show()
     
@@ -84,6 +83,6 @@ for collection in collections:
     userRatio(uniqueUserRatio,collection)
     
 
-    plotCFD(uniqueUserRatio)
+    plotCFD(uniqueUserRatio, collection)
 
         
