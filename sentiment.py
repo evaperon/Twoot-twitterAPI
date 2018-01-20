@@ -1,6 +1,7 @@
 from pymongo import MongoClient
 import requests
 from preprocessing import parseTweets
+import matplotlib.pyplot as plt
 
 MONGO_HOST='mongodb://localhost/twootdb'
 
@@ -36,10 +37,19 @@ def pies():
         for document in cursor:
             frequencies[document['label']]+=1
         print(frequencies)
+        
         #Plot pie
+        labels = list(frequencies.keys())
+        sizes = list(frequencies.values())
+        plotColors= '#38C477', 'khaki', '#F2543D', '#EEEEEE'
+        fig1, ax1 = plt.subplots()
+        ax1.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=90, colors=plotColors)
+        ax1.axis('equal') # Equal aspect ratio ensures that pie is drawn as a circle
+        plt.title('Sentiment ratio for  <' + collection+ '>')
+        plt.show()
      
 #Uncomment in order to run the above
 '''  
-addSentiment()          
+addSentiment()'''      
 pies()
-'''
+
